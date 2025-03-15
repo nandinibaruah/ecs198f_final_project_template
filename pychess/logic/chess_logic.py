@@ -43,6 +43,62 @@ class ChessLogic:
         Returns:
             str: Extended Chess Notation for the move, if valid. Empty str if the move is invalid
         """
-        
+        if len(move) > 4:
+            return "" # invalid move
+
+        start_col, start_row = move[0], move[1]
+        end_col, end_row = move[2], move[3]
+
+
+        if self.valid_move(start_row, start_col, end_row, end_col):
+            # update board
+            pass
+        else:
+            return "" # invalid move
+
         #Implement this
         pass
+    
+    def valid_move(self, start_row: str, start_col: str, end_row: str, end_col: str) -> bool:
+        """
+        Function to check whether a move is valid
+
+        Args:
+            start_row (str): the row of the starting position
+
+            start_col (str): the column of the starting position
+
+            end_row (str): the row of the ending position
+
+            end_col (str): the column of the ending position
+
+        Returns:
+            bool:
+            True if the move is valid
+            False if the move is not valid
+        """
+
+        selected_pce = self.piece_at_loc(start_row, start_col)
+        end_pos = self.piece_at_loc(end_row, end_col)
+
+        # To implement
+        pass
+
+    def piece_at_loc(self, row: str, col: str) -> ord:
+        """
+        Function to get the current piece at a board position
+
+        Args:
+            row (str): the row of the position
+
+            col (str): the column of the position
+            
+            i.e. e2 - the piece at E2
+
+        Returns:
+            ord: the piece at the specified board position
+        """
+        curr_pce_col = ord(col) - ord('a')
+        curr_pce_row = 8 - int(row)
+        
+        return self.board[curr_pce_row][curr_pce_col]
