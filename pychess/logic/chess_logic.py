@@ -142,7 +142,37 @@ class ChessLogic:
             
             # if not one of the other moves, not valid for pawn
             return False
- 
+        
+        #Logic for knight
+        elif piece_type == 'N':
+            if(abs(row_diff) == 2 and abs(col_diff) == 1) or (abs(row_diff) == 1 and abs(col_diff) == 2):
+                return True
+            return False
+        
+        #Logic for Bishop
+        elif piece_type == 'B':
+            #diagonal
+            if abs(row_diff) != abs(col_diff):
+                return False
+            #determine steps and rows for the bishop moves
+            if row_diff > 0:
+                step_row = 1 
+            else:
+                step_row = -1
+            
+            if col_diff > 0:
+                step_col = 1 
+            else:
+                step_col = -1
+
+            #now we check that every sqaure is empty through the diag
+            for i in range (1, abs(row_diff)):
+                if self.board[start_row_idx + i * step_row][start_col_idx + i * step_col] != '':
+                    return False
+            return True
+
+            
+        
         
         
         return False
