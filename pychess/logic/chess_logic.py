@@ -120,7 +120,19 @@ class ChessLogic:
 
         # pawn validation
         if piece_type == 'P':
+            # handling whether white or black piece
+            direction = 1 if selected_pce.islower() else -1
+            initial_row = 1 if selected_pce.islower() else 6
 
+            if col_diff == 0 and end_pos == '': # forward moves
+                if row_diff == direction: # single square
+                    return True
+                elif row_diff == 2 * direction and start_row_idx == initial_row: # move pawn twice
+                    middle_row = start_row_idx + direction 
+                    return self.board[middle_row][start_col_idx] == ''
+            elif abs(col_diff) == 1 and row_diff == direction and end_pos != '': # captures
+                    return True
+            return False
  
         
         
