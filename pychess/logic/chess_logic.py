@@ -77,12 +77,41 @@ class ChessLogic:
             True if the move is valid
             False if the move is not valid
         """
-
+        
         selected_pce = self.piece_at_loc(start_row, start_col)
         end_pos = self.piece_at_loc(end_row, end_col)
 
         # To implement
-        pass
+        
+        # check if there's a piece at the starting position
+        if selected_pce == '':
+            return False
+        
+        # check if it's the correct player's turn
+        if (self.white_to_move and selected_pce.islower()) or (not self.white_to_move and selected_pce.isupper()):
+            return False
+        
+        # check if the ending position contains a piece of the same color
+        if end_pos != '' and end_pos.isupper() == selected_pce.isupper():
+            return False 
+        
+        # handle piece-specific movement
+        piece_type = selected_pce.upper()
+ 
+        if piece_type == 'P':  # Pawn
+            return self._valid_pawn_move(start_row, start_col, end_row, end_col, selected_pce)
+        elif piece_type == 'R':  # Rook
+            return self._valid_rook_move(start_row, start_col, end_row, end_col)
+        elif piece_type == 'N':  # Knight
+            return self._valid_knight_move(start_row, start_col, end_row, end_col)
+        elif piece_type == 'B':  # Bishop
+            return self._valid_bishop_move(start_row, start_col, end_row, end_col)
+        elif piece_type == 'Q':  # Queen
+            return self._valid_queen_move(start_row, start_col, end_row, end_col)
+        elif piece_type == 'K':  # King
+            return self._valid_king_move(start_row, start_col, end_row, end_col, selected_pce)
+        
+        return False
 
     def piece_at_loc(self, row: str, col: str) -> ord:
         """
