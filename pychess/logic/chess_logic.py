@@ -59,6 +59,10 @@ class ChessLogic:
         #Implement this
         pass
     
+    def valid_pawn_move(self, start_row: str, start_col: str, end_row: str, end_col: str, piece:str) -> bool:
+        ""
+        pass
+
     def valid_move(self, start_row: str, start_col: str, end_row: str, end_col: str) -> bool:
         """
         Function to check whether a move is valid
@@ -83,10 +87,22 @@ class ChessLogic:
 
         # To implement
         
+        # converting coordinates to indices 
+        start_row_idx = 8 - int(start_row)
+        start_col_idx = ord(start_col) - ord('a')
+        end_row_idx = 8 - int(end_row)
+        end_col_idx = ord(end_col) - ord('a')
+
+        # basic validation and edge cases
+                
         # check if there's a piece at the starting position
         if selected_pce == '':
             return False
         
+        # moving to the same square
+        if start_row_idx == end_row_idx and start_col_idx == end_col_idx:
+            return False
+
         # check if it's the correct player's turn
         if (self.white_to_move and selected_pce.islower()) or (not self.white_to_move and selected_pce.isupper()):
             return False
@@ -95,21 +111,18 @@ class ChessLogic:
         if end_pos != '' and end_pos.isupper() == selected_pce.isupper():
             return False 
         
+        # calculate move differences
+        row_diff = end_row_idx - start_row_idx
+        col_diff = end_col_idx - start_col_idx
+        
         # handle piece-specific movement
-        piece_type = selected_pce.upper()
+        piece_type = selected_pce.upper() # convert to uppercase for comparisons
+
+        # pawn validation
+        if piece_type == 'P':
+
  
-        if piece_type == 'P':  # Pawn
-            return self._valid_pawn_move(start_row, start_col, end_row, end_col, selected_pce)
-        elif piece_type == 'R':  # Rook
-            return self._valid_rook_move(start_row, start_col, end_row, end_col)
-        elif piece_type == 'N':  # Knight
-            return self._valid_knight_move(start_row, start_col, end_row, end_col)
-        elif piece_type == 'B':  # Bishop
-            return self._valid_bishop_move(start_row, start_col, end_row, end_col)
-        elif piece_type == 'Q':  # Queen
-            return self._valid_queen_move(start_row, start_col, end_row, end_col)
-        elif piece_type == 'K':  # King
-            return self._valid_king_move(start_row, start_col, end_row, end_col, selected_pce)
+        
         
         return False
 
