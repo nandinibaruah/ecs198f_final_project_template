@@ -124,14 +124,23 @@ class ChessLogic:
             direction = 1 if selected_pce.islower() else -1
             initial_row = 1 if selected_pce.islower() else 6
 
-            if col_diff == 0 and end_pos == '': # forward moves
-                if row_diff == direction: # single square
+            # forward moves
+            if col_diff == 0 and end_pos == '': # can only move forward and must be an empty square
+                # moving one square 
+                if row_diff == direction: # direction should match piece color
                     return True
-                elif row_diff == 2 * direction and start_row_idx == initial_row: # move pawn twice
+                
+                # if first move, pawn can move twice
+                elif row_diff == 2 * direction and start_row_idx == initial_row: 
                     middle_row = start_row_idx + direction 
+                    # middle row has to be empty for piece to move twice
                     return self.board[middle_row][start_col_idx] == ''
-            elif abs(col_diff) == 1 and row_diff == direction and end_pos != '': # captures
+                
+            # captures
+            elif abs(col_diff) == 1 and row_diff == direction and end_pos != '': # must move diagonally so col and row must change, must capture enemy piece
                     return True
+            
+            # if not one of the other moves, not valid for pawn
             return False
  
         
