@@ -164,6 +164,38 @@ class ChessLogic:
                 step_col = 1 
             else:
                 step_col = -1
+		    
+	#Logic for Rook
+	elif piece_type == 'R':
+		#rook can only move in a straight line vertically or horizontally
+
+	# moving horizontally: if the row number changes, return false
+		if start_row_idx != end_row_idx:
+			return False
+		#if there are pieces in between the start and the end position, return false
+		if start_row_idx == end_row_idx:
+			## 1 means right and -1 means left
+			if end_col_idx > start_col_idx:
+				direction = 1
+			else direction = -1
+			for col in range(start_col_idx, end_col_idx, step):
+				if self.board[start_row_idx][col] != '': 
+					return False #square is not empty			
+	#moving vertically: if the column number changes, return false
+	    	if start_col_idx != end_col_idx:
+			return False
+	    	#if there are pieces in between the start and the end position, return false
+	    	if start_col_idx == end_col_idx:
+			## 1 means up and -1 means down
+			if end_col_idx > start_col_idx:
+				direction = 1
+			else direction = -1
+			for row in range(start_row_idx, end_row_idx, step):
+				if self.board[row][start_col_idx] != '': 
+					return False #square is not empty
+			
+	elif piece_type == 'Q':
+		
 
             #now we check that every sqaure is empty through the diag
             for i in range (1, abs(row_diff)):
