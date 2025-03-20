@@ -1,227 +1,132 @@
 class ChessLogic:
     def __init__(self):
         """
-        Initalize the ChessLogic Object. External fields are board and result
+        Initialize the ChessLogic Object. External fields are board and result
 
         board -> Two Dimensional List of string Representing the Current State of the Board
             P, R, N, B, Q, K - White Pieces
-
             p, r, n, b, q, k - Black Pieces
-
             '' - Empty Square
 
         result -> The current result of the game
             w - White Win
-
             b - Black Win
-
             d - Draw
-
             '' - Game In Progress
         """
         self.board = [
-			['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
-			['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
-			['','','','','','','',''],
-			['','','','','','','',''],
-			['','','','','','','',''],
-			['','','','','','','',''],
-			['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
-			['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
-		]
-        self.result = "" 
+            ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
+            ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
+            ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
+        ]
+        self.result = ""
+        self.white_to_move = True
 
     def play_move(self, move: str) -> str:
         """
-        Function to make a move if it is a valid move. This function is called everytime a move in made on the board
-
-        Args:
-            move (str): The move which is proposed. The format is the following: starting_sqaure}{ending_square}
-            
-            i.e. e2e4 - This means that whatever piece is on E2 is moved to E4
-
-        Returns:
-            str: Extended Chess Notation for the move, if valid. Empty str if the move is invalid
+        Function to make a move if it is a valid move.
         """
         if len(move) > 4:
-            return "" # invalid move
+            return ""  # Invalid move
 
         start_col, start_row = move[0], move[1]
         end_col, end_row = move[2], move[3]
 
-
         if self.valid_move(start_row, start_col, end_row, end_col):
-            # update board
+            # Update board (to be implemented)
             pass
         else:
-            return "" # invalid move
-
-        #Implement this
-        pass
-    
-    def valid_pawn_move(self, start_row: str, start_col: str, end_row: str, end_col: str, piece:str) -> bool:
-        ""
-        pass
+            return ""  # Invalid move
+        
+        pass  # Implement this!
 
     def valid_move(self, start_row: str, start_col: str, end_row: str, end_col: str) -> bool:
         """
-        Function to check whether a move is valid
-
-        Args:
-            start_row (str): the row of the starting position
-
-            start_col (str): the column of the starting position
-
-            end_row (str): the row of the ending position
-
-            end_col (str): the column of the ending position
-
-        Returns:
-            bool:
-            True if the move is valid
-            False if the move is not valid
+        Function to check whether a move is valid.
         """
-        
         selected_pce = self.piece_at_loc(start_row, start_col)
         end_pos = self.piece_at_loc(end_row, end_col)
 
-        # To implement
-        
-        # converting coordinates to indices 
         start_row_idx = 8 - int(start_row)
         start_col_idx = ord(start_col) - ord('a')
         end_row_idx = 8 - int(end_row)
         end_col_idx = ord(end_col) - ord('a')
 
-        # basic validation and edge cases
-                
-        # check if there's a piece at the starting position
         if selected_pce == '':
             return False
         
-        # moving to the same square
         if start_row_idx == end_row_idx and start_col_idx == end_col_idx:
             return False
 
-        # check if it's the correct player's turn
         if (self.white_to_move and selected_pce.islower()) or (not self.white_to_move and selected_pce.isupper()):
             return False
         
-        # check if the ending position contains a piece of the same color
         if end_pos != '' and end_pos.isupper() == selected_pce.isupper():
-            return False 
+            return False
         
-        # calculate move differences
         row_diff = end_row_idx - start_row_idx
         col_diff = end_col_idx - start_col_idx
         
-        # handle piece-specific movement
-        piece_type = selected_pce.upper() # convert to uppercase for comparisons
-
-        # pawn validation
+        piece_type = selected_pce.upper()
+        
         if piece_type == 'P':
-            # handling whether white or black piece
             direction = 1 if selected_pce.islower() else -1
             initial_row = 1 if selected_pce.islower() else 6
 
-            # forward moves
-            if col_diff == 0 and end_pos == '': # can only move forward and must be an empty square
-                # moving one square 
-                if row_diff == direction: # direction should match piece color
+            if col_diff == 0 and end_pos == '':
+                if row_diff == direction:
                     return True
-                
-                # if first move, pawn can move twice
-                elif row_diff == 2 * direction and start_row_idx == initial_row: 
-                    middle_row = start_row_idx + direction 
-                    # middle row has to be empty for piece to move twice
+                elif row_diff == 2 * direction and start_row_idx == initial_row:
+                    middle_row = start_row_idx + direction
                     return self.board[middle_row][start_col_idx] == ''
-                
-            # captures
-            elif abs(col_diff) == 1 and row_diff == direction and end_pos != '': # must move diagonally so col and row must change, must capture enemy piece
-                    return True
-            
-            # if not one of the other moves, not valid for pawn
-            return False
-        
-        #Logic for knight
-        elif piece_type == 'N':
-            if(abs(row_diff) == 2 and abs(col_diff) == 1) or (abs(row_diff) == 1 and abs(col_diff) == 2):
+            elif abs(col_diff) == 1 and row_diff == direction and end_pos != '':
                 return True
+            
             return False
         
-        #Logic for Bishop
+        elif piece_type == 'N':
+            return (abs(row_diff) == 2 and abs(col_diff) == 1) or (abs(row_diff) == 1 and abs(col_diff) == 2)
+        
         elif piece_type == 'B':
-            #diagonal
             if abs(row_diff) != abs(col_diff):
                 return False
-            #determine steps and rows for the bishop moves
-            if row_diff > 0:
-                step_row = 1 
-            else:
-                step_row = -1
-            
-            if col_diff > 0:
-                step_col = 1 
-            else:
-                step_col = -1
-		    
-	#Logic for Rook
-	elif piece_type == 'R':
-		#rook can only move in a straight line vertically or horizontally
-
-	# moving horizontally: if the row number changes, return false
-		if start_row_idx != end_row_idx:
-			return False
-		#if there are pieces in between the start and the end position, return false
-		if start_row_idx == end_row_idx:
-			## 1 means right and -1 means left
-			if end_col_idx > start_col_idx:
-				direction = 1
-			else direction = -1
-			for col in range(start_col_idx, end_col_idx, step):
-				if self.board[start_row_idx][col] != '': 
-					return False #square is not empty			
-	#moving vertically: if the column number changes, return false
-	    	if start_col_idx != end_col_idx:
-			return False
-	    	#if there are pieces in between the start and the end position, return false
-	    	if start_col_idx == end_col_idx:
-			## 1 means up and -1 means down
-			if end_col_idx > start_col_idx:
-				direction = 1
-			else direction = -1
-			for row in range(start_row_idx, end_row_idx, step):
-				if self.board[row][start_col_idx] != '': 
-					return False #square is not empty
-			
-	elif piece_type == 'Q':
-		
-
-            #now we check that every sqaure is empty through the diag
-            for i in range (1, abs(row_diff)):
+            step_row = 1 if row_diff > 0 else -1
+            step_col = 1 if col_diff > 0 else -1
+            for i in range(1, abs(row_diff)):
                 if self.board[start_row_idx + i * step_row][start_col_idx + i * step_col] != '':
                     return False
             return True
-
+        
+        elif piece_type == 'R':
+            if start_row_idx != end_row_idx and start_col_idx != end_col_idx:
+                return False
             
+            if start_row_idx == end_row_idx:
+                direction = 1 if end_col_idx > start_col_idx else -1
+                for col in range(start_col_idx + direction, end_col_idx, direction):
+                    if self.board[start_row_idx][col] != '':
+                        return False
+            elif start_col_idx == end_col_idx:
+                direction = 1 if end_row_idx > start_row_idx else -1
+                for row in range(start_row_idx + direction, end_row_idx, direction):
+                    if self.board[row][start_col_idx] != '':
+                        return False
+            
+            return True
         
-        
+        elif piece_type == 'Q':
+            return self.valid_move(start_row, start_col, end_row, end_col) or self.valid_move(start_row, start_col, end_row, end_col)
         
         return False
 
-    def piece_at_loc(self, row: str, col: str) -> ord:
+    def piece_at_loc(self, row: str, col: str) -> str:
         """
-        Function to get the current piece at a board position
-
-        Args:
-            row (str): the row of the position
-
-            col (str): the column of the position
-            
-            i.e. e2 - the piece at E2
-
-        Returns:
-            ord: the piece at the specified board position
+        Function to get the current piece at a board position.
         """
         curr_pce_col = ord(col) - ord('a')
         curr_pce_row = 8 - int(row)
