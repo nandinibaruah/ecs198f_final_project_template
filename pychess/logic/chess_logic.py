@@ -57,23 +57,32 @@ class ChessLogic:
         end_row_idx = 8 - int(end_row)
         end_col_idx = ord(end_col) - ord('a')
 
+        # base cases
+
+        # no selection for piece
         if selected_pce == '':
             return False
         
+        # no selection for position
         if start_row_idx == end_row_idx and start_col_idx == end_col_idx:
             return False
 
+        # ensuring selected piece matches current turn
         if (self.white_to_move and selected_pce.islower()) or (not self.white_to_move and selected_pce.isupper()):
             return False
         
+        # makes sure end piece is not the same color as piece being moved
         if end_pos != '' and end_pos.isupper() == selected_pce.isupper():
             return False
         
+        # calculate the position differences to use for individual type checks
         row_diff = end_row_idx - start_row_idx
         col_diff = end_col_idx - start_col_idx
         
+        # convert piece type to upper for comparisons
         piece_type = selected_pce.upper()
         
+        # pawn logic
         if piece_type == 'P':
             direction = 1 if selected_pce.islower() else -1
             initial_row = 1 if selected_pce.islower() else 6
@@ -89,9 +98,11 @@ class ChessLogic:
             
             return False
         
+        # knight logic
         elif piece_type == 'N':
             return (abs(row_diff) == 2 and abs(col_diff) == 1) or (abs(row_diff) == 1 and abs(col_diff) == 2)
         
+        # bishop logic
         elif piece_type == 'B':
             if abs(row_diff) != abs(col_diff):
                 return False
@@ -102,6 +113,7 @@ class ChessLogic:
                     return False
             return True
         
+        # rook logic
         elif piece_type == 'R':
             if start_row_idx != end_row_idx and start_col_idx != end_col_idx:
                 return False
@@ -119,9 +131,13 @@ class ChessLogic:
             
             return True
         
+        # queen logic
         elif piece_type == 'Q':
             return self.valid_move(start_row, start_col, end_row, end_col) or self.valid_move(start_row, start_col, end_row, end_col)
         
+        # king logic
+        # need to implement
+
         return False
 
     def piece_at_loc(self, row: str, col: str) -> str:
