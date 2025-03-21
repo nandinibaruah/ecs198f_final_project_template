@@ -113,6 +113,147 @@ class ChessLogic:
                     return False
             return True
         
+               
+        elif piece_type == 'K':
+        # the king move one tile in any dir
+            if abs(row_diff) <= 1 and abs(col_diff) <= 1:
+                return True
+
+            # here we have the edge cse for castling where king moves two sqaure horizontally
+            if row_diff == 0 and abs(col_diff) == 2:
+                # here we check if a sqaure is under adttack
+                def is_square_attacked(r, c, color):
+                    # here we look for the collor
+                    if color == 'white':
+                        e_pwn, e_kni, e_b, e_r, e_q, e_k = 'p', 'n', 'b', 'r',  'q', 'k'
+                        # b pawn move set for att
+                        if r - 1 >= 0:
+                            if c - 1 >= 0 and self.board[r - 1][c - 1] ==  e_pwn:
+                                return True
+                            if c + 1 <  8 and self.board[r - 1][c + 1] == e_pwn:
+                                return True
+                    else:  # check for other color
+                        e_pwn, e_kni, e_b, e_r, e_q, e_k = 'P', 'N', 'B', 'R', 'Q', 'K'
+                        # white pwn
+                        if r + 1 < 8:
+                            if c - 1 >=  0 and self.board[r + 1][c - 1] == e_pwn:
+                                return True
+                            if c + 1 < 8 and self.board[r + 1][c + 1] == e_pwn:
+                                return True
+
+                    #now knight
+                    knight_moves = [(-2, -1), (-2, 1), (-1, -2),  (-1, 2),
+                                    (1, -2),  (1, 2),  (2, -1),  (2, 1)]
+                    for dr, dc in knight_moves:
+                        rr, cc = r + dr, c + dc
+                        if 0 <= rr < 8 and  0 <= cc < 8:
+                            if self.board[rr][cc] == e_kni:
+                                return True
+
+                    # the diagnoal case 
+                    for dr, dc in [(-1, -1), (-1, 1), (1, -1), (1, 1)]:
+                        rr, cc = r + dr, c + dc
+                        while 0 <= rr < 8 and 0 <= cc < 8:
+                            if self.board[rr][cc] != '':
+                                if self.board[rr][cc] in (e_b, e_q):
+                                    return True
+                                break
+                            rr +=  dr
+                            cc += dc
+
+                    # straight lines
+                    for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                        rr, cc = r + dr, c + dc
+                        while 0 <= rr < 8 and 0 <= cc < 8:
+                            if self.board[rr][cc] != '':
+                                if self.board[rr][cc] in (e_r, e_q):
+                                    return True
+                                break
+                            rr += dr
+                            cc += dc
+
+                    # sqaure next to king
+                    for dr in [-1, 0, 1]:
+                        for dc in [-1, 0, 1]:
+                            if dr == 0 and dc == 0:
+                                continue
+                            rr, cc = r + dr, c + dc
+                            if 0 <= rr < 8 and 0 <= cc < 8:
+                                if self.board[rr][cc] == e_k:
+                                    return True
+
+                    return False
+
+                # check color 
+                king_color = 'white' if selected_pce.isupper() else 'black'
+                
+                if selected_pce.isupper():
+                    
+                    if start_row_idx != 7 or start_col_idx != 4:
+                        return False
+
+                    if col_diff == 2:
+                        
+                        if self.board[7][5] != '' or self.board[7][6] != '':
+                            return False
+                       
+                        if self.board[7][7] != 'R':
+                            return False
+                        if (is_square_attacked(7, 4, king_color) or 
+                            is_square_attacked(7, 5, king_color) or 
+                            is_square_attacked(7, 6, king_color)):
+                            return False
+                        return True
+
+                    # Queenside castling for White: e1 -> c1 (col_diff == -2).
+                    elif col_diff == -2:
+                        # d1 (7,3), c1 (7,2), and b1 (7,1) must be empty.
+                        if self.board[7][3] != '' or self.board[7][2] != '' or self.board[7][1] != '':
+                            return False
+                        # Rook must be at a1 (7,0).
+                        if self.board[7][0] != 'R':
+                            return False
+                        # Check that e1, d1, and c1 are not under attack.
+                        if (is_square_attacked(7, 4, king_color) or 
+                            is_square_attacked(7, 3, king_color) or 
+                            is_square_attacked(7, 2, king_color)):
+                            return False
+                        return True
+
+                else:
+              
+                    if start_row_idx != 0 or start_col_idx != 4:
+                        return False
+                    if col_diff == 2:
+                        
+                        if self.board[0][5] != '' or self.board[0][6] != '':
+                            return False
+                 
+                        if self.board[0][7] != 'r':
+                            return False
+                        
+                        if (is_square_attacked(0, 4, king_color) or 
+                            is_square_attacked(0, 5, king_color) or 
+                            is_square_attacked(0, 6, king_color)):
+                            return False
+                        return True
+
+                    # Queenside castling for Black: e8 -> c8 (col_diff == -2).
+                    elif col_diff == -2:
+                   
+                        if self.board[0][3] != '' or self.board[0][2] != '' or self.board[0][1] != '':
+                            return False
+                       
+                        if self.board[0][0] != 'r':
+                            return False
+                        if (is_square_attacked(0, 4, king_color) or 
+                            is_square_attacked(0, 3, king_color) or 
+                            is_square_attacked(0, 2, king_color)):
+                            return False
+                        return True
+
+            return False
+        
         # rook logic
         elif piece_type == 'R':
             if start_row_idx != end_row_idx and start_col_idx != end_col_idx:
