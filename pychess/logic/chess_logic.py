@@ -113,7 +113,7 @@ class ChessLogic:
                     return False
             return True
         
-               
+        # king logic
         elif piece_type == 'K':
         # the king move one tile in any dir
             if abs(row_diff) <= 1 and abs(col_diff) <= 1:
@@ -276,11 +276,103 @@ class ChessLogic:
         elif piece_type == 'Q':
             return self.valid_move(start_row, start_col, end_row, end_col) or self.valid_move(start_row, start_col, end_row, end_col)
         
-        # king logic
-        # need to implement
+
+
+        #edge case: for the scenario where moving a piece would result in having the king in check
+
+        if self.move_leads_check(start_row_idx, start_col_idx, end_row_idx, end_col_idx, selected_pce):
+            return False
+        
+
+        return False #should be return True?
+
+
+    def move_leads_check(self, sr, sc, er, ec,moving_piece) -> bool:
+        #sr = start row....
+        # we will simualte the move on an empty board 
+        t_board = [row[:] for row in self.board]
+        t_board[er][ec] = moving_piece
+        t_board[sr][sc] = ''
+
+        king_symb = 'K' if moving_piece.is_upper() else 'k'
+        king_pos = None
+        for i in range (8):
+            for k in range(8):
+                if t_board[i][k] == king_symb:
+                    king_pos = (i,k)
+                    break
+                if king_pos is not None:
+                    break
+        
+        if king_pos == None:
+            return True
+        
+        moving_col = 'white' if moving_piece.is_upper() else 'black'
+        return self.is_square_attacked_b(t_board, king_pos[0], king_pos[1], moving_col)
+
+    #this function checks whether sqaure at pos is attacked by anything
+    # same logic as used in the king piece--
+    def is_square_attacked_b(self, board, r,c,color) -> bool:
+        if color == 'white':
+            e_pwn, e_k, e_b, e_r, e_q, e_k = 'p', 'n', 'b', 'r', 'q', 'k'
+            # black pawn capture
+            if r - 1 >= 0:
+                if c - 1 >= 0 and board[r - 1][c - 1] == e_pwn:
+                    return True
+                if c + 1 < 8 and board[r - 1][c + 1] == e_pwn:
+                    return True
+        else:
+            e_pwn, e_k, e_b, e_r,  e_q, e_k = 'P', 'N', 'B', 'R', 'Q', 'K'
+            # now white pawn
+            if r + 1 < 8:
+                if c - 1 >= 0 and board[r + 1][c - 1] ==  e_pwn:
+                    return True
+                if c + 1 < 8 and board[r + 1][c + 1] == e_pwn:
+                    return True
+
+        # Knight
+        knight_moves = [(-2, -1), (-2, 1), (-1, -2), (-1, 2),
+                        (1, -2),  (1, 2), (2, -1), (2, 1)]
+        for dr, dc in knight_moves:
+            rr, cc = r + dr, c + dc
+            if 0 <= rr < 8 and 0 <= cc < 8:
+                if board[rr][cc] == e_k:
+                    return True
+
+        # for bishop and queen since this chekcs diagonls
+        for dr, dc in [(-1, -1), (-1, 1), (1, -1), (1, 1)]:
+            rr, cc = r + dr, c + dc
+            while 0 <= rr < 8 and 0 <= cc < 8:
+                if board[rr][cc] != '':
+                    if board[rr][cc] in (e_b, e_q):
+                        return True
+                    break
+                rr += dr
+                cc += dc
+
+        # straught line for rook and queen 
+        for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+            rr, cc = r + dr, c + dc
+            while 0 <= rr < 8 and 0 <= cc < 8:
+                if board[rr][cc] != '':
+                    if board[rr][cc] in (e_r, e_q):
+                        return True
+                    break
+                rr += dr
+                cc += dc
+
+        # next to king
+        for dr in [-1, 0, 1]:
+            for dc in [-1, 0, 1]:
+                if dr == 0 and dc == 0:
+                    continue
+                rr, cc = r + dr, c + dc
+                if 0 <= rr < 8 and 0 <= cc < 8:
+                    if board[rr][cc] == e_k:
+                        return True
 
         return False
-
+        
     def piece_at_loc(self, row: str, col: str) -> str:
         """
         Function to get the current piece at a board position.
