@@ -39,7 +39,32 @@ class ChessLogic:
 
         if self.valid_move(start_row, start_col, end_row, end_col):
             # Update board (to be implemented)
-            pass
+            start_row_idx = 8 - int(start_row)
+            start_col_idx = ord(start_col) - ord('a')
+            end_row_idx = 8 - int(end_row)
+            end_col_idx = ord(end_col) - ord('a')
+
+            moving_piece = self.board[start_row_idx][start_col_idx]
+                                                     
+            #pawn promotion edge case
+            if moving_piece.upper() == 'P':
+                #white is index 0
+                #black is index 7
+                if (moving_piece.isupper() and end_row_idx == 0) or (moving_piece.islower() and end_row_idx ==7):
+                    promoted_p = 'Q' if moving_piece.isupper() else 'q'
+                    self.board[end_row_idx][end_col_idx] = promoted_p
+                    self.board[start_row_idx][start_col_idx] = ''
+                    self.white_to_move = not self.white_to_move
+                    # Return extended notation with promotion
+                    return move + "=Q"
+                                                     
+                                                     
+            #do a regular move
+            self.board[end_row_idx][end_col_idx] = moving_piece
+            self.board[start_row_idx][start_col_idx] = ''
+            self.white_to_move = not self.white_to_move
+
+            return move # change later for exntended notation
         else:
             return ""  # Invalid move
         
