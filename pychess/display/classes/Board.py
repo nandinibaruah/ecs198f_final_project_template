@@ -76,7 +76,9 @@ class Board:
             elif self.end_pos == "":
                 self.end_pos = clicked_square.get_coord()
                 if self.start_pos != self.end_pos:
-                    self.logic.play_move(f"{self.start_pos}{self.end_pos}")
+                    move = self.logic.play_move(f"{self.start_pos}{self.end_pos}")
+                # prints the move to console
+                    print(move)
                 self.start_pos = ""
                 self.end_pos = ""
     

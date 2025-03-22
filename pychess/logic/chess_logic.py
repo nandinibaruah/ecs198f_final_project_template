@@ -45,9 +45,14 @@ class ChessLogic:
             end_col_idx = ord(end_col) - ord('a')
 
             moving_piece = self.board[start_row_idx][start_col_idx]
-                                                     
+
+            capture = False
+            if self.board[end_row_idx][end_col_idx] != '':
+                capture = True                                    
             #pawn promotion edge case
+            isPawn = False
             if moving_piece.upper() == 'P':
+                isPawn = True
                 #white is index 0
                 #black is index 7
                 if (moving_piece.isupper() and end_row_idx == 0) or (moving_piece.islower() and end_row_idx ==7):
@@ -56,15 +61,28 @@ class ChessLogic:
                     self.board[start_row_idx][start_col_idx] = ''
                     self.white_to_move = not self.white_to_move
                     # Return extended notation with promotion
-                    return move + "=Q"
+                    if capture:
+                        return move[0:2] + "x" + move[2:] + "=Q"
+                    else: return move + "=Q"
                                                      
                                                      
             #do a regular move
+            
+
             self.board[end_row_idx][end_col_idx] = moving_piece
             self.board[start_row_idx][start_col_idx] = ''
             self.white_to_move = not self.white_to_move
 
-            return move # change later for exntended notation
+            if isPawn:
+                if capture:
+                    return move[0:2] + "x" + move[2:]
+                else:
+                    return move
+            else:
+                if capture:
+                    return moving_piece + move[0:2] + "x" + move[2:]
+                else:
+                    return moving_piece + move
         else:
             return ""  # Invalid move
         
