@@ -317,7 +317,21 @@ class ChessLogic:
         
         # queen logic
         elif piece_type == 'Q':
-            return self.valid_move(start_row, start_col, end_row, end_col) or self.valid_move(start_row, start_col, end_row, end_col)
+            # Store original piece type
+            original_piece = self.board[start_row_idx][start_col_idx]
+    
+            # Check if valid as a rook
+            self.board[start_row_idx][start_col_idx] = 'R'
+            rook_valid = self.valid_move(start_row, start_col, end_row, end_col)
+    
+            # Check if valid as a bishop
+            self.board[start_row_idx][start_col_idx] = 'B'
+            bishop_valid = self.valid_move(start_row, start_col, end_row, end_col)
+    
+            # Restore original piece
+            self.board[start_row_idx][start_col_idx] = original_piece
+    
+            return rook_valid or bishop_valid
         
 
 
